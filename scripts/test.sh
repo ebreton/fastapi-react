@@ -4,25 +4,13 @@
 set -e
 
 # Run this from the root of the project
-cookiecutter --no-input -f ./ project_slug="testing-project"
 
-cd testing-project
+rm -rf ./testing-project
 
-docker-compose build
-docker-compose down -v --remove-orphans
-docker-compose up -d
-# Run migrations first
-docker-compose run --rm backend alembic upgrade head
+cookiecutter --no-input -f ./ project_name="Testing Project"
 
-# Backend/frontend tests
-./scripts/test.sh
+cd ./testing-project
 
-# Cleanup
-docker-compose down -v --remove-orphans
+bash ./scripts/test.sh "$@"
 
-# only remove directory if running locally
-if [[ -z "$CIRCLE_CI_ENV" ]]; then
-    echo "empty"
-    cd ..
-    rm -rf testing-project
-fi
+cd ../
